@@ -69,6 +69,11 @@
       "description": "Robust authentication with JWT tokens to protect sensitive client data and operations."
     }
   },
+  "videoSection": {
+    "badge": "See It In Action",
+    "title": "Watch SpotTrack in Action",
+    "subtitle": "A quick walkthrough of how SpotTrack helps gyms monitor equipment and keep members moving"
+  },
   "clientSolution": {
     "badge": "For Gym Members",
     "title": "Built for Your Training",
