@@ -47,6 +47,9 @@
     </div>
 
     <div class="proceed-section">
+      @if (errorMsg) {
+        <div class="form-error">{{ errorMsg }}</div>
+      }
       <button
         class="proceed-btn"
         [disabled]="loadingPlan !== null"
