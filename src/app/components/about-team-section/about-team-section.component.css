@@ -1,0 +1,156 @@
+/* ===========================
+   SECTION
+   =========================== */
+
+.video-section {
+  padding: 110px 0;
+  background: #0a0a0a;
+  font-family: 'Istok Web', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ---- Ambient background shapes ---- */
+.vid-bg {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.vid-bg-teal {
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(64, 224, 208, 0.06) 0%, transparent 65%);
+  top: -160px;
+  right: -100px;
+  filter: blur(65px);
+  animation: bgPulseB 12s ease-in-out infinite;
+}
+
+.vid-bg-yellow {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(247, 183, 49, 0.05) 0%, transparent 65%);
+  bottom: -100px;
+  left: -80px;
+  filter: blur(70px);
+  animation: bgPulseA 9s ease-in-out infinite reverse;
+}
+
+/* ===========================
+   CONTAINER
+   =========================== */
+
+.video-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 48px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===========================
+   HEADER
+   =========================== */
+
+.video-header {
+  text-align: center;
+  margin-bottom: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 16px;
+  background: rgba(64, 224, 208, 0.08);
+  border: 1px solid rgba(64, 224, 208, 0.22);
+  border-radius: 100px;
+  font-size: 11px;
+  color: #40e0d0;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.video-title {
+  color: white;
+  font-size: 2.6rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.video-subtitle {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1.05rem;
+  line-height: 1.75;
+  max-width: 540px;
+  margin: 0;
+}
+
+/* ===========================
+   VIDEO FRAME
+   =========================== */
+
+.video-frame {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.026);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.video-frame iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ===========================
+   KEYFRAMES
+   =========================== */
+
+@keyframes bgPulseA {
+  0%, 100% { transform: scale(1);    opacity: 1; }
+  50%       { transform: scale(1.12); opacity: 0.65; }
+}
+
+@keyframes bgPulseB {
+  0%, 100% { transform: scale(1);    opacity: 1; }
+  50%       { transform: scale(1.18); opacity: 0.6; }
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+
+@media (max-width: 960px) {
+  .video-section   { padding: 80px 0; }
+  .video-container { padding: 0 32px; }
+  .video-header    { margin-bottom: 40px; }
+  .video-title     { font-size: 2.2rem; }
+}
+
+@media (max-width: 600px) {
+  .video-section   { padding: 60px 0; }
+  .video-container { padding: 0 20px; }
+  .video-title     { font-size: 1.9rem; }
+  .video-header    { margin-bottom: 32px; gap: 14px; }
+  .video-frame     { border-radius: 14px; }
+}
