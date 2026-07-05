@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { StripeService } from '../../services/stripe';
 
 interface Plan {
   key: string;
@@ -21,10 +20,10 @@ export class PlanSelectionComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private auth = inject(AuthService);
-  private stripe = inject(StripeService);
 
   selectedKey = 'basic';
   loadingPlan: string | null = null;
+  errorMsg = '';
 
   readonly plans: Plan[] = [
     {
@@ -60,7 +59,7 @@ export class PlanSelectionComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    if (!this.auth.getSession()) {
+    if (!this.auth.getPendingRegistration()) {
       const plan = this.route.snapshot.queryParamMap.get('plan') ?? 'basic';
       this.router.navigate(['/register'], { queryParams: { plan } });
       return;
@@ -76,16 +75,31 @@ export class PlanSelectionComponent implements OnInit {
     this.selectedKey = key;
   }
 
-  async proceedToPayment(): Promise<void> {
+  proceedToPayment(): void {
     if (this.loadingPlan) return;
-    this.loadingPlan = this.selectedKey;
-    try {
-      sessionStorage.setItem('spottrack_pending_plan', this.selectedKey);
-      await this.stripe.redirectToCheckout(this.selectedKey);
-    } catch (err) {
-      console.error('[Stripe] Checkout failed:', err);
-      alert('Payment service unavailable. Please try again later.');
-      this.loadingPlan = null;
+    const draft = this.auth.getPendingRegistration();
+    if (!draft) {
+      this.router.navigate(['/register'], { queryParams: { plan: this.selectedKey } });
+      return;
     }
+
+    this.loadingPlan = this.selectedKey;
+    this.errorMsg = '';
+
+    this.auth.registerBusiness(draft, this.selectedKey.toUpperCase()).subscribe({
+      next: ({ checkoutUrl }) => {
+        this.auth.clearPendingRegistration();
+        window.location.href = checkoutUrl;
+      },
+      error: (err) => {
+        this.loadingPlan = null;
+        const status = err?.status;
+        if (status === 409 || status === 400) {
+          this.errorMsg = 'This email is already registered. Please use a different one.';
+        } else {
+          this.errorMsg = err?.error?.message ?? 'Payment service unavailable. Please try again later.';
+        }
+      },
+    });
   }
 }

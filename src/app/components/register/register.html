@@ -230,12 +230,8 @@
         }
       </div>
 
-      @if (errorMsg) {
-        <div class="form-error">{{ errorMsg }}</div>
-      }
-
-      <button type="submit" class="submit-btn" [disabled]="loading">
-        {{ loading ? 'Creating account…' : 'Create account & continue' }}
+      <button type="submit" class="submit-btn">
+        Continue to plan selection
       </button>
 
     </form>

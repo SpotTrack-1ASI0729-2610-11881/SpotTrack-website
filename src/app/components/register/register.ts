@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AbstractControl, ReactiveFormsModule, FormBuilder, ValidationErrors, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { switchMap } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 
 const DNI_PATTERN = /^[0-9]{8}$/;
@@ -29,8 +28,6 @@ export class RegisterComponent implements OnInit {
   private auth = inject(AuthService);
 
   planKey = 'basic';
-  loading = false;
-  errorMsg = '';
 
   readonly legalTypes = ['SAC', 'SRL', 'SA', 'EIRL'] as const;
 
@@ -63,8 +60,8 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.planKey = this.route.snapshot.queryParamMap.get('plan') ?? 'basic';
-    // Already have a session — skip registration
-    if (this.auth.getSession()) {
+    // Already staged a registration — skip straight to plan selection
+    if (this.auth.getPendingRegistration()) {
       this.router.navigate(['/plans'], { queryParams: { plan: this.planKey } });
     }
   }
@@ -87,9 +84,7 @@ export class RegisterComponent implements OnInit {
   get planLabel()        { return this.planNames[this.planKey] ?? this.planKey; }
 
   onSubmit(): void {
-    if (this.form.invalid || this.loading) return;
-    this.loading = true;
-    this.errorMsg = '';
+    if (this.form.invalid) return;
 
     const v = this.form.value as {
       firstName: string; lastName: string; dni: string; phoneNumber: string;
@@ -98,30 +93,9 @@ export class RegisterComponent implements OnInit {
       username: string; password: string;
     };
 
-    this.auth.signUp(v.username, v.password).pipe(
-      switchMap(() => this.auth.signIn(v.username, v.password)),
-      switchMap((res) => {
-        this.auth.saveSession({ userId: res.id, username: res.username, token: res.token });
-        return this.auth.updateAdminProfile({
-          firstName: v.firstName, lastName: v.lastName, phoneNumber: v.phoneNumber, dni: v.dni,
-          companyName: v.companyName, ruc: v.ruc, legalType: v.legalType,
-          companyPhone: v.companyPhone, companyEmail: v.companyEmail,
-          street: v.street, city: v.city, district: v.district,
-        }, res.token);
-      })
-    ).subscribe({
-      next: () => {
-        this.router.navigate(['/plans'], { queryParams: { plan: this.planKey } });
-      },
-      error: (err) => {
-        this.loading = false;
-        const status = err?.status;
-        if (status === 409 || status === 400) {
-          this.errorMsg = 'This email is already registered. Please use a different one.';
-        } else {
-          this.errorMsg = err?.error?.message ?? 'Registration failed. Please try again.';
-        }
-      },
-    });
+    // Nothing is sent to the backend yet — the account is only created once
+    // payment is confirmed. Stage the form and move on to plan selection.
+    this.auth.stagePendingRegistration(v);
+    this.router.navigate(['/plans'], { queryParams: { plan: this.planKey } });
   }
 }
