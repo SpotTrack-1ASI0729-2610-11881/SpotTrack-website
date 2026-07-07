@@ -6,6 +6,7 @@
     import { ClientFeaturesSectionComponent } from '../client-features-section/client-features-section.component';
     import { FooterSection } from '../footer-section/footer-section.component';
     import { VideoSectionComponent } from '../video-section/video-section.component';
+    import { AboutTeamSectionComponent } from '../about-team-section/about-team-section.component';
 
 
 @Component({
@@ -14,6 +15,7 @@
     HeroSectionComponent,
     FeaturesSectionComponent,
     VideoSectionComponent,
+    AboutTeamSectionComponent,
     ClientFeaturesSectionComponent,
     PricingSection,
     ContactSection,
